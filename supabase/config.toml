@@ -1,1 +1,4 @@
 project_id = "yruiwprgnnxmxnhtgypf"
+
+[functions.animal-chat]
+verify_jwt = false
