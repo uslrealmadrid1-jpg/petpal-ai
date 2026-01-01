@@ -2,95 +2,128 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Base colors */
+    --background: 45 30% 97%;
+    --foreground: 25 25% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 45 40% 99%;
+    --card-foreground: 25 25% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 45 40% 99%;
+    --popover-foreground: 25 25% 15%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 142 40% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 35 60% 92%;
+    --secondary-foreground: 25 25% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 40 20% 94%;
+    --muted-foreground: 25 15% 45%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 35 70% 55%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 65% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 35 25% 88%;
+    --input: 35 25% 88%;
+    --ring: 142 40% 45%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Animal-specific theme colors */
+    --animal-gecko-main: 43 80% 80%;
+    --animal-gecko-accent: 25 40% 50%;
+    --animal-gecko-bg: 40 60% 96%;
+    --animal-gecko-text: 15 35% 25%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --animal-turtle-main: 100 35% 68%;
+    --animal-turtle-accent: 25 35% 40%;
+    --animal-turtle-bg: 40 25% 90%;
+    --animal-turtle-text: 120 30% 18%;
 
-    --sidebar-primary: 240 5.9% 10%;
+    --animal-hamster-main: 35 65% 75%;
+    --animal-hamster-accent: 35 45% 65%;
+    --animal-hamster-bg: 35 50% 97%;
+    --animal-hamster-text: 20 40% 25%;
 
-    --sidebar-primary-foreground: 0 0% 98%;
+    --animal-rabbit-main: 0 0% 100%;
+    --animal-rabbit-accent: 0 0% 85%;
+    --animal-rabbit-bg: 350 70% 95%;
+    --animal-rabbit-text: 0 0% 26%;
 
-    --sidebar-accent: 240 4.8% 95.9%;
+    --animal-fish-main: 199 85% 65%;
+    --animal-fish-accent: 85 65% 55%;
+    --animal-fish-bg: 187 60% 96%;
+    --animal-fish-text: 199 70% 30%;
 
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --animal-bird-main: 207 80% 55%;
+    --animal-bird-accent: 50 90% 55%;
+    --animal-bird-bg: 207 60% 95%;
+    --animal-bird-text: 207 70% 25%;
 
-    --sidebar-border: 220 13% 91%;
+    /* Sidebar */
+    --sidebar-background: 45 30% 97%;
+    --sidebar-foreground: 25 25% 15%;
+    --sidebar-primary: 142 40% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 35 60% 92%;
+    --sidebar-accent-foreground: 25 25% 20%;
+    --sidebar-border: 35 25% 88%;
+    --sidebar-ring: 142 40% 45%;
 
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Custom effects */
+    --shadow-soft: 0 4px 20px -4px hsl(25 25% 15% / 0.08);
+    --shadow-card: 0 2px 12px -2px hsl(25 25% 15% / 0.06);
+    --shadow-elevated: 0 8px 30px -6px hsl(25 25% 15% / 0.12);
+    
+    --gradient-nature: linear-gradient(135deg, hsl(142 40% 45%), hsl(85 45% 50%));
+    --gradient-warm: linear-gradient(135deg, hsl(35 70% 55%), hsl(25 60% 50%));
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 25 20% 8%;
+    --foreground: 40 20% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 25 18% 12%;
+    --card-foreground: 40 20% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 25 18% 12%;
+    --popover-foreground: 40 20% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 142 45% 50%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 25 15% 18%;
+    --secondary-foreground: 40 20% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 25 15% 18%;
+    --muted-foreground: 40 15% 60%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 35 65% 50%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 55% 45%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    --border: 25 15% 20%;
+    --input: 25 15% 20%;
+    --ring: 142 45% 50%;
+
+    --sidebar-background: 25 20% 10%;
+    --sidebar-foreground: 40 20% 95%;
+    --sidebar-primary: 142 45% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-accent: 25 15% 18%;
+    --sidebar-accent-foreground: 40 20% 90%;
+    --sidebar-border: 25 15% 20%;
+    --sidebar-ring: 142 45% 50%;
   }
 }
 
@@ -100,6 +133,106 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Source Sans 3', system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', system-ui, sans-serif;
+    @apply font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .animal-card {
+    @apply rounded-xl p-4 transition-all duration-300 ease-out;
+    box-shadow: var(--shadow-card);
+  }
+
+  .animal-card:hover {
+    box-shadow: var(--shadow-elevated);
+    transform: translateY(-2px);
+  }
+
+  .section-header {
+    @apply flex items-center gap-2 text-lg font-semibold mb-3;
+  }
+
+  .checklist-item {
+    @apply flex items-center gap-3 p-3 rounded-lg bg-muted/50 transition-all duration-200;
+  }
+
+  .checklist-item:hover {
+    @apply bg-muted;
+  }
+
+  .tab-animal {
+    @apply flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-200;
+  }
+
+  .tab-animal.active {
+    @apply shadow-md;
+  }
+
+  .chat-bubble {
+    @apply max-w-[85%] p-3 rounded-2xl;
+  }
+
+  .chat-bubble.user {
+    @apply bg-primary text-primary-foreground rounded-br-sm ml-auto;
+  }
+
+  .chat-bubble.assistant {
+    @apply bg-muted text-foreground rounded-bl-sm;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.2s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { 
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
   }
 }

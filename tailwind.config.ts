@@ -7,12 +7,16 @@ export default {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1rem",
       screens: {
         "2xl": "1400px",
       },
     },
     extend: {
+      fontFamily: {
+        sans: ["'Source Sans 3'", "system-ui", "sans-serif"],
+        display: ["'Nunito'", "system-ui", "sans-serif"],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -57,28 +61,64 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Animal-specific colors
+        animal: {
+          gecko: {
+            main: "hsl(var(--animal-gecko-main))",
+            accent: "hsl(var(--animal-gecko-accent))",
+            bg: "hsl(var(--animal-gecko-bg))",
+            text: "hsl(var(--animal-gecko-text))",
+          },
+          turtle: {
+            main: "hsl(var(--animal-turtle-main))",
+            accent: "hsl(var(--animal-turtle-accent))",
+            bg: "hsl(var(--animal-turtle-bg))",
+            text: "hsl(var(--animal-turtle-text))",
+          },
+          hamster: {
+            main: "hsl(var(--animal-hamster-main))",
+            accent: "hsl(var(--animal-hamster-accent))",
+            bg: "hsl(var(--animal-hamster-bg))",
+            text: "hsl(var(--animal-hamster-text))",
+          },
+          rabbit: {
+            main: "hsl(var(--animal-rabbit-main))",
+            accent: "hsl(var(--animal-rabbit-accent))",
+            bg: "hsl(var(--animal-rabbit-bg))",
+            text: "hsl(var(--animal-rabbit-text))",
+          },
+          fish: {
+            main: "hsl(var(--animal-fish-main))",
+            accent: "hsl(var(--animal-fish-accent))",
+            bg: "hsl(var(--animal-fish-bg))",
+            text: "hsl(var(--animal-fish-text))",
+          },
+          bird: {
+            main: "hsl(var(--animal-bird-main))",
+            accent: "hsl(var(--animal-bird-accent))",
+            bg: "hsl(var(--animal-bird-bg))",
+            text: "hsl(var(--animal-bird-text))",
+          },
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      boxShadow: {
+        soft: "var(--shadow-soft)",
+        card: "var(--shadow-card)",
+        elevated: "var(--shadow-elevated)",
+      },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
       },
       animation: {
