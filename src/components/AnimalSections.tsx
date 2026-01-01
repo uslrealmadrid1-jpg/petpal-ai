@@ -6,19 +6,19 @@ import { AlertTriangle } from "lucide-react";
 interface AnimalSectionsProps {
   animalId: string;
   requirements?: DbRequirements | null;
-  food: DbFood[];
-  diseases: DbDisease[];
-  warnings: DbWarning[];
-  checklists: DbChecklist[];
+  food?: DbFood[];
+  diseases?: DbDisease[];
+  warnings?: DbWarning[];
+  checklists?: DbChecklist[];
 }
 
 export function AnimalSections({ 
   animalId, 
   requirements, 
-  food, 
-  diseases, 
-  warnings, 
-  checklists 
+  food = [], 
+  diseases = [], 
+  warnings = [], 
+  checklists = [] 
 }: AnimalSectionsProps) {
   const inköpItems = checklists.filter(c => c.typ === "inköp").map(c => c.item);
   const dagligItems = checklists.filter(c => c.typ === "daglig").map(c => c.item);
