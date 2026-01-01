@@ -1,6 +1,6 @@
 import { DbAnimal } from "@/hooks/useAnimals";
 import { cn } from "@/lib/utils";
-import { Bot } from "lucide-react";
+import { Bot, ChevronRight } from "lucide-react";
 
 interface AnimalTabsProps {
   animals: DbAnimal[];
@@ -49,14 +49,15 @@ export function AnimalTabs({ animals, activeAnimal, onSelectAnimal, isLoading }:
                 key={animal.id}
                 onClick={() => onSelectAnimal(animal.id)}
                 className={cn(
-                  "tab-animal shrink-0 border-2 border-transparent",
+                  "tab-animal-compact shrink-0 border-2 border-transparent",
                   theme.bg,
                   theme.text,
-                  isActive && `ring-2 ${theme.active} ring-offset-2 ring-offset-background`
+                  isActive && `ring-2 ${theme.active} ring-offset-1 ring-offset-background`
                 )}
               >
-                <span className="text-lg">{animal.emoji || "🐾"}</span>
-                <span className="font-display font-semibold text-sm">{animal.namn}</span>
+                <span className="text-sm">{animal.emoji || "🐾"}</span>
+                <span className="font-display font-medium text-xs">{animal.namn}</span>
+                <ChevronRight className="w-3 h-3 opacity-50" />
               </button>
             );
           })}
@@ -64,12 +65,12 @@ export function AnimalTabs({ animals, activeAnimal, onSelectAnimal, isLoading }:
           <button
             onClick={() => onSelectAnimal(null)}
             className={cn(
-              "tab-animal shrink-0 bg-primary text-primary-foreground border-2 border-transparent",
-              activeAnimal === null && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+              "tab-animal-compact shrink-0 bg-primary text-primary-foreground border-2 border-transparent",
+              activeAnimal === null && "ring-2 ring-primary ring-offset-1 ring-offset-background"
             )}
           >
-            <Bot className="w-4 h-4" />
-            <span className="font-display font-semibold text-sm">AI-Assistent</span>
+            <Bot className="w-3 h-3" />
+            <span className="font-display font-medium text-xs">AI-Assistent</span>
           </button>
         </div>
       </div>
