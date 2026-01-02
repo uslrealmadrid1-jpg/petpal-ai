@@ -8,7 +8,7 @@ import { AnimalSections } from "@/components/AnimalSections";
 import { SearchBar } from "@/components/SearchBar";
 import { AIChat } from "@/components/AIChat";
 import { Button } from "@/components/ui/button";
-import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot } from "lucide-react";
+import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot, ArrowLeft } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,6 +39,11 @@ export default function Index() {
   const handleGlobalAIClick = () => {
     setActiveView("globalAI");
     setActiveAnimal(null);
+  };
+
+  // Handler for going back from Global AI
+  const handleBackClick = () => {
+    setActiveView("animal");
   };
 
   // Handler for selecting an animal
@@ -179,6 +184,17 @@ export default function Index() {
         {activeView === "globalAI" ? (
           /* Global AI Chat View - completely separate from animals */
           <div className="max-w-2xl mx-auto animate-fade-in">
+            {/* Back Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBackClick}
+              className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Tillbaka till djur
+            </Button>
+            
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
                 <Bot className="w-4 h-4" />
