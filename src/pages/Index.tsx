@@ -1,14 +1,26 @@
 import { useState, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { useAnimals, useAnimalDetails } from "@/hooks/useAnimals";
+import { useAuth } from "@/hooks/useAuth";
 import { AnimalTabs } from "@/components/AnimalTabs";
 import { AnimalProfile } from "@/components/AnimalProfile";
 import { AnimalSections } from "@/components/AnimalSections";
 import { SearchBar } from "@/components/SearchBar";
 import { AIChat } from "@/components/AIChat";
-import { PawPrint, Heart, Sparkles, Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Index() {
   const { data: animals = [], isLoading: animalsLoading } = useAnimals();
+  const { user, isLoading: authLoading, roles, signOut, isAdmin, isModerator } = useAuth();
   const [activeAnimal, setActiveAnimal] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -58,9 +70,60 @@ export default function Index() {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Heart className="w-3 h-3 text-red-500" />
-              <span>{animals.length} arter</span>
+            
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
+                <Heart className="w-3 h-3 text-red-500" />
+                <span>{animals.length} arter</span>
+              </div>
+              
+              {/* Auth Section */}
+              {authLoading ? (
+                <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
+              ) : user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" size="sm" className="gap-2">
+                      <User className="w-4 h-4" />
+                      <span className="hidden sm:inline max-w-[100px] truncate">
+                        {user.user_metadata?.display_name || user.email?.split("@")[0]}
+                      </span>
+                      {isAdmin && <Shield className="w-3 h-3 text-amber-500" />}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium">{user.email}</p>
+                        <p className="text-xs text-muted-foreground">
+                          Roll: {roles.length > 0 ? roles.join(", ") : "Användare"}
+                        </p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {(isAdmin || isModerator) && (
+                      <>
+                        <DropdownMenuItem className="text-amber-600">
+                          <Shield className="w-4 h-4 mr-2" />
+                          {isAdmin ? "Adminpanel" : "Moderatorvy"}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
+                    <DropdownMenuItem onClick={signOut}>
+                      <LogOut className="w-4 h-4 mr-2" />
+                      Logga ut
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link to="/auth">
+                  <Button size="sm" className="gap-2">
+                    <LogIn className="w-4 h-4" />
+                    <span className="hidden sm:inline">Logga in</span>
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
           
