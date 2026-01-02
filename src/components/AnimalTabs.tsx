@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import { DbAnimal } from "@/hooks/useAnimals";
 import { cn } from "@/lib/utils";
-import { Bot, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface AnimalTabsProps {
   animals: DbAnimal[];
@@ -91,16 +91,6 @@ export function AnimalTabs({ animals, activeAnimal, onSelectAnimal, isLoading }:
               );
             })}
             
-            <button
-              onClick={() => onSelectAnimal(null)}
-              className={cn(
-                "tab-animal-compact shrink-0 bg-primary text-primary-foreground border-2 border-transparent",
-                activeAnimal === null && "ring-2 ring-primary ring-offset-1 ring-offset-background"
-              )}
-            >
-              <Bot className="w-3 h-3" />
-              <span className="font-display font-medium text-xs">AI-Assistent</span>
-            </button>
           </div>
 
           {/* Höger pil */}

@@ -13,8 +13,8 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, animalId } = await req.json();
-    console.log("Received chat request:", { messageCount: messages?.length, animalId });
+    const { messages, animalId, isGlobalAI } = await req.json();
+    console.log("Received chat request:", { messageCount: messages?.length, animalId, isGlobalAI });
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
@@ -29,8 +29,50 @@ serve(async (req) => {
 
     // Build context from database
     let animalContext = "";
+    let systemPrompt = "";
     
-    if (animalId) {
+    if (isGlobalAI) {
+      // Global AI mode - fetch all animals for broad knowledge
+      console.log("Global AI mode - fetching all animals");
+      const { data: allAnimals } = await supabase
+        .from("animals")
+        .select("*");
+
+      if (allAnimals && allAnimals.length > 0) {
+        animalContext = `ALLA DJUR I DATABASEN (${allAnimals.length} arter):
+${allAnimals.map((a: any) => `${a.emoji || "🐾"} ${a.namn} (${a.vetenskapligt_namn || "Okänt"}) - Kategori: ${a.kategori}, Svårighet: ${a.svårighet || "Ej angiven"}`).join("\n")}`;
+      }
+
+      systemPrompt = `Du är en GLOBAL djur-AI för DjurData-appen. Du är INTE kopplad till ett specifikt djur. 
+
+DITT UPPDRAG:
+- Svara generellt om ALLA djur i världen
+- Jämför olika djurarter (skillnader, likheter, svårighetsgrad)
+- Ge bred kunskap om djurhållning
+- Hjälp användare välja rätt djur baserat på deras situation
+- Svara på frågor som spänner över flera arter
+
+GRUNDREGLER:
+1. Du kan diskutera ALLA djur, inte bara de i databasen.
+2. För specifika skötselråd om ett djur i appen, uppmana användaren att välja det djuret.
+3. Svara på svenska, pedagogiskt och tydligt.
+4. Jämför gärna djur när det är relevant (t.ex. "Leopardgecko vs. Skäggagam").
+5. Ge ALDRIG medicinska råd som ersätter veterinär.
+6. Prioritera ALLTID djurets hälsa och säkerhet.
+
+SAKER DU KAN HJÄLPA MED:
+- "Vilket djur passar för nybörjare?"
+- "Vad är skillnaden mellan en hamster och en kanin?"
+- "Vilka djur kräver minst utrymme?"
+- "Kan jag ha flera arter tillsammans?"
+- "Vilket reptildjur rekommenderar du?"
+- "Vad kostar det ungefär att ha en fågel?"
+
+${animalContext}
+
+Svara alltid hjälpsamt och uppmuntra användaren att välja ett specifikt djur i appen för detaljerad information.`;
+
+    } else if (animalId) {
       console.log("Fetching animal data for:", animalId);
       
       // Fetch animal data
@@ -116,19 +158,8 @@ Veckorutiner: ${checklists.filter(c => c.typ === "veckovis").map(c => c.item).jo
 `;
         console.log("Built animal context, length:", animalContext.length);
       }
-    } else {
-      // Fetch all animals for general context
-      const { data: allAnimals } = await supabase
-        .from("animals")
-        .select("*");
 
-      if (allAnimals && allAnimals.length > 0) {
-        animalContext = `TILLGÄNGLIGA DJUR I DATABASEN:
-${allAnimals.map((a: any) => `${a.emoji || "🐾"} ${a.namn} (${a.vetenskapligt_namn}) - ${a.kategori}, ${a.svårighet}`).join("\n")}`;
-      }
-    }
-
-    const systemPrompt = `Du är en intelligent assistent för DjurData-appen. Ditt jobb är att ge korrekt, säker och användbar information om alla djur i appen, rekommendera produkter, skapa dagliga rutiner och checklistor, samt hjälpa användare på ett tryggt sätt.
+      systemPrompt = `Du är en intelligent assistent för DjurData-appen. Ditt jobb är att ge korrekt, säker och användbar information om alla djur i appen, rekommendera produkter, skapa dagliga rutiner och checklistor, samt hjälpa användare på ett tryggt sätt.
 
 GRUNDREGLER (MÅSTE FÖLJAS):
 1. Använd ALLTID databasens djurdata som primär källa.
@@ -154,16 +185,29 @@ SÄKERHETSREGLER:
 - Varna om potentiellt giftiga växter, mat eller material
 - Informera om temperatur- och fuktighetskrav som är kritiska
 
-KATEGORISERING AV DJUR:
-- Typ: Däggdjur, Reptil, Fågel, Fisk, Groddjur, Kräftdjur
-- Svårighet: Nybörjare, Medel, Avancerad
-- Aktivitet: Dagaktiv, Nattaktiv, Skymningsaktiv
-
 ${animalContext}
 
 Svara alltid med korrekt fakta baserad på databasen. Om du inte har information, säg det istället för att gissa. Avsluta gärna med en relevant tips eller varning.`;
 
-    console.log("Calling Lovable AI Gateway...");
+    } else {
+      // Fallback - no animal, no global AI flag
+      const { data: allAnimals } = await supabase
+        .from("animals")
+        .select("*");
+
+      if (allAnimals && allAnimals.length > 0) {
+        animalContext = `TILLGÄNGLIGA DJUR I DATABASEN:
+${allAnimals.map((a: any) => `${a.emoji || "🐾"} ${a.namn} (${a.vetenskapligt_namn}) - ${a.kategori}, ${a.svårighet}`).join("\n")}`;
+      }
+
+      systemPrompt = `Du är en intelligent assistent för DjurData-appen. Ditt jobb är att ge korrekt, säker och användbar information om alla djur i appen.
+
+${animalContext}
+
+Svara på svenska och hjälp användaren välja ett djur för detaljerad information.`;
+    }
+
+    console.log("Calling Lovable AI Gateway, isGlobalAI:", isGlobalAI);
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {

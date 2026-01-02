@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAnimals, useAnimalDetails } from "@/hooks/useAnimals";
 import { useAuth } from "@/hooks/useAuth";
@@ -8,7 +8,7 @@ import { AnimalSections } from "@/components/AnimalSections";
 import { SearchBar } from "@/components/SearchBar";
 import { AIChat } from "@/components/AIChat";
 import { Button } from "@/components/ui/button";
-import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield } from "lucide-react";
+import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,19 +18,36 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+type ActiveView = "animal" | "globalAI";
+
 export default function Index() {
   const { data: animals = [], isLoading: animalsLoading } = useAnimals();
   const { user, isLoading: authLoading, roles, signOut, isAdmin, isModerator } = useAuth();
+  const [activeView, setActiveView] = useState<ActiveView>("animal");
   const [activeAnimal, setActiveAnimal] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  // Set first animal as active when loaded
-  useMemo(() => {
-    if (animals.length > 0 && activeAnimal === null) {
+  // Set first animal as active when loaded (only if not in globalAI view)
+  useEffect(() => {
+    if (animals.length > 0 && activeAnimal === null && activeView === "animal") {
       setActiveAnimal(animals[0].id);
     }
-  }, [animals, activeAnimal]);
+  }, [animals, activeAnimal, activeView]);
+
+  // Handler for Global AI button
+  const handleGlobalAIClick = () => {
+    setActiveView("globalAI");
+    setActiveAnimal(null);
+  };
+
+  // Handler for selecting an animal
+  const handleSelectAnimal = (id: string | null) => {
+    if (id !== null) {
+      setActiveView("animal");
+      setActiveAnimal(id);
+    }
+  };
 
   const { data: animalDetails, isLoading: detailsLoading } = useAnimalDetails(activeAnimal);
 
@@ -76,6 +93,17 @@ export default function Index() {
                 <Heart className="w-3 h-3 text-red-500" />
                 <span>{animals.length} arter</span>
               </div>
+              
+              {/* Global AI Button */}
+              <Button
+                variant={activeView === "globalAI" ? "default" : "outline"}
+                size="sm"
+                onClick={handleGlobalAIClick}
+                className="gap-2"
+              >
+                <Bot className="w-4 h-4" />
+                <span className="hidden sm:inline">Allmän AI</span>
+              </Button>
               
               {/* Auth Section */}
               {authLoading ? (
@@ -136,32 +164,34 @@ export default function Index() {
         </div>
       </header>
 
-      {/* Animal Tabs */}
-      <AnimalTabs
-        animals={filteredAnimals}
-        activeAnimal={activeAnimal}
-        onSelectAnimal={setActiveAnimal}
-        isLoading={animalsLoading}
-      />
+      {/* Animal Tabs - only show when not in Global AI view */}
+      {activeView === "animal" && (
+        <AnimalTabs
+          animals={filteredAnimals}
+          activeAnimal={activeAnimal}
+          onSelectAnimal={handleSelectAnimal}
+          isLoading={animalsLoading}
+        />
+      )}
 
       {/* Main Content */}
       <main className="container py-6">
-        {activeAnimal === null ? (
-          /* AI Chat View */
+        {activeView === "globalAI" ? (
+          /* Global AI Chat View - completely separate from animals */
           <div className="max-w-2xl mx-auto animate-fade-in">
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
-                <Sparkles className="w-4 h-4" />
-                <span className="font-medium text-sm">AI-Assistent</span>
+                <Bot className="w-4 h-4" />
+                <span className="font-medium text-sm">Allmän AI-Assistent</span>
               </div>
               <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                Fråga mig om djurvård!
+                Fråga mig om alla djur!
               </h2>
               <p className="text-muted-foreground">
-                Jag svarar baserat på all data i appen och hjälper dig med skötselråd.
+                Jag svarar generellt om alla djur, jämför arter och ger bred kunskap.
               </p>
             </div>
-            <AIChat animalId={null} animalName={null} />
+            <AIChat animalId={null} animalName={null} isGlobalAI={true} />
           </div>
         ) : detailsLoading ? (
           <div className="flex items-center justify-center py-12">

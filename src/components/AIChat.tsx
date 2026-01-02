@@ -14,6 +14,7 @@ interface Message {
 interface AIChatProps {
   animalId?: string | null;
   animalName?: string | null;
+  isGlobalAI?: boolean;
 }
 
 const quickActions = [
@@ -23,7 +24,7 @@ const quickActions = [
   { icon: Sparkles, label: "Tips för nybörjare", prompt: "Ge tips för nybörjare" },
 ];
 
-export function AIChat({ animalId, animalName }: AIChatProps) {
+export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -34,10 +35,10 @@ export function AIChat({ animalId, animalName }: AIChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Reset messages when animal changes
+  // Reset messages when animal changes or when switching to global AI
   useEffect(() => {
     setMessages([]);
-  }, [animalId]);
+  }, [animalId, isGlobalAI]);
 
   const streamChat = async (userMessages: Message[]) => {
     const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/animal-chat`;
@@ -50,7 +51,8 @@ export function AIChat({ animalId, animalName }: AIChatProps) {
       },
       body: JSON.stringify({
         messages: userMessages.map((m) => ({ role: m.role, content: m.content })),
-        animalId,
+        animalId: isGlobalAI ? null : animalId,
+        isGlobalAI,
       }),
     });
 
@@ -150,10 +152,12 @@ export function AIChat({ animalId, animalName }: AIChatProps) {
           </div>
           <div>
             <h3 className="font-display font-semibold text-foreground">
-              {animalName ? `${animalName}-experten` : "🐾 Djurvårds-AI"}
+              {isGlobalAI ? "🌍 Allmän Djur-AI" : animalName ? `${animalName}-experten` : "🐾 Djurvårds-AI"}
             </h3>
             <p className="text-xs text-muted-foreground">
-              {animalName
+              {isGlobalAI
+                ? "Fråga mig om alla djur, jämför arter och få generella råd"
+                : animalName
                 ? `Fråga mig om ${animalName}!`
                 : "Fråga mig om alla djur i databasen"}
             </p>
