@@ -293,12 +293,43 @@ export type Database = {
           },
         ]
       }
+      login_logs: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          ip_address: string | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
           created_at: string | null
           display_name: string | null
           id: string
+          last_login: string | null
           updated_at: string | null
         }
         Insert: {
@@ -306,6 +337,7 @@ export type Database = {
           created_at?: string | null
           display_name?: string | null
           id: string
+          last_login?: string | null
           updated_at?: string | null
         }
         Update: {
@@ -313,6 +345,7 @@ export type Database = {
           created_at?: string | null
           display_name?: string | null
           id?: string
+          last_login?: string | null
           updated_at?: string | null
         }
         Relationships: []

@@ -5,17 +5,47 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { PawPrint, Loader2, Eye, EyeOff, ArrowLeft, Shield } from "lucide-react";
+import { PawPrint, Loader2, Eye, EyeOff, ArrowLeft, Shield, Check, X } from "lucide-react";
 import { z } from "zod";
+import { logLoginAttempt, updateLastLogin } from "@/hooks/useLoginLogger";
+
+// Strong password validation for signup
+const passwordSchema = z.string()
+  .min(12, { message: "Lösenord måste vara minst 12 tecken" })
+  .max(72, { message: "Lösenord får vara max 72 tecken" })
+  .refine((val) => /[A-ZÅÄÖ]/.test(val), {
+    message: "Måste innehålla minst en stor bokstav",
+  })
+  .refine((val) => /[a-zåäö]/.test(val), {
+    message: "Måste innehålla minst en liten bokstav",
+  })
+  .refine((val) => /[0-9]/.test(val), {
+    message: "Måste innehålla minst en siffra",
+  })
+  .refine((val) => /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(val), {
+    message: "Måste innehålla minst ett specialtecken (!@#$%^&* etc.)",
+  });
 
 const authSchema = z.object({
   email: z.string().trim().email({ message: "Ogiltig e-postadress" }).max(255),
   password: z.string().min(6, { message: "Lösenord måste vara minst 6 tecken" }).max(72),
 });
 
-const signupSchema = authSchema.extend({
+const signupSchema = z.object({
+  email: z.string().trim().email({ message: "Ogiltig e-postadress" }).max(255),
+  password: passwordSchema,
   displayName: z.string().trim().min(2, { message: "Namn måste vara minst 2 tecken" }).max(100).optional(),
 });
+
+// Password check indicator component
+function PasswordCheck({ passed, text }: { passed: boolean; text: string }) {
+  return (
+    <div className={`flex items-center gap-2 ${passed ? 'text-green-600' : 'text-muted-foreground'}`}>
+      {passed ? <Check className="w-3 h-3" /> : <X className="w-3 h-3" />}
+      <span>{text}</span>
+    </div>
+  );
+}
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -67,6 +97,17 @@ export default function Auth() {
     return true;
   };
 
+  // Password strength indicators
+  const passwordChecks = {
+    length: password.length >= 12,
+    uppercase: /[A-ZÅÄÖ]/.test(password),
+    lowercase: /[a-zåäö]/.test(password),
+    number: /[0-9]/.test(password),
+    special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+  };
+
+  const allChecksPass = Object.values(passwordChecks).every(Boolean);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -76,12 +117,15 @@ export default function Auth() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email: email.trim(),
           password,
         });
         
         if (error) {
+          // Log failed login attempt
+          await logLoginAttempt({ email: email.trim(), success: false });
+          
           if (error.message.includes("Invalid login credentials")) {
             toast({
               variant: "destructive",
@@ -92,6 +136,12 @@ export default function Auth() {
             throw error;
           }
           return;
+        }
+        
+        // Log successful login and update last_login
+        if (data.user) {
+          await logLoginAttempt({ email: email.trim(), success: true, userId: data.user.id });
+          await updateLastLogin(data.user.id);
         }
         
         toast({
@@ -235,6 +285,20 @@ export default function Auth() {
                 </div>
                 {errors.password && (
                   <p className="text-xs text-destructive">{errors.password}</p>
+                )}
+                
+                {/* Password strength indicators for signup */}
+                {!isLogin && password.length > 0 && (
+                  <div className="mt-3 p-3 bg-muted rounded-lg space-y-2">
+                    <p className="text-xs font-medium text-foreground mb-2">Lösenordskrav:</p>
+                    <div className="grid grid-cols-1 gap-1.5 text-xs">
+                      <PasswordCheck passed={passwordChecks.length} text="Minst 12 tecken" />
+                      <PasswordCheck passed={passwordChecks.uppercase} text="En stor bokstav (A-Ö)" />
+                      <PasswordCheck passed={passwordChecks.lowercase} text="En liten bokstav (a-ö)" />
+                      <PasswordCheck passed={passwordChecks.number} text="En siffra (0-9)" />
+                      <PasswordCheck passed={passwordChecks.special} text="Ett specialtecken (!@#$%)" />
+                    </div>
+                  </div>
                 )}
               </div>
 

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAnimals, useAnimalDetails } from "@/hooks/useAnimals";
 import { useAuth } from "@/hooks/useAuth";
 import { AnimalTabs } from "@/components/AnimalTabs";
@@ -8,7 +8,7 @@ import { AnimalSections } from "@/components/AnimalSections";
 import { SearchBar } from "@/components/SearchBar";
 import { AIChat } from "@/components/AIChat";
 import { Button } from "@/components/ui/button";
-import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot, ArrowLeft } from "lucide-react";
+import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot, ArrowLeft, Users } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +21,7 @@ import {
 type ActiveView = "animal" | "globalAI";
 
 export default function Index() {
+  const navigate = useNavigate();
   const { data: animals = [], isLoading: animalsLoading } = useAnimals();
   const { user, isLoading: authLoading, roles, signOut, isAdmin, isModerator } = useAuth();
   const [activeView, setActiveView] = useState<ActiveView>("animal");
@@ -136,9 +137,12 @@ export default function Index() {
                     <DropdownMenuSeparator />
                     {(isAdmin || isModerator) && (
                       <>
-                        <DropdownMenuItem className="text-amber-600">
-                          <Shield className="w-4 h-4 mr-2" />
-                          {isAdmin ? "Adminpanel" : "Moderatorvy"}
+                        <DropdownMenuItem 
+                          className="text-amber-600"
+                          onClick={() => navigate("/admin")}
+                        >
+                          <Users className="w-4 h-4 mr-2" />
+                          Användardata
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
                       </>
