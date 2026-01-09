@@ -8,7 +8,7 @@ import { AnimalSections } from "@/components/AnimalSections";
 import { SearchBar } from "@/components/SearchBar";
 import { AIChat } from "@/components/AIChat";
 import { Button } from "@/components/ui/button";
-import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot, ArrowLeft, Users } from "lucide-react";
+import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot, ArrowLeft } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -149,18 +149,6 @@ export default function Index() {
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
-                    {(isAdmin || isModerator) && (
-                      <>
-                        <DropdownMenuItem 
-                          className="text-amber-600"
-                          onClick={() => navigate("/admin")}
-                        >
-                          <Users className="w-4 h-4 mr-2" />
-                          Användardata
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                      </>
-                    )}
                     <DropdownMenuItem onClick={signOut}>
                       <LogOut className="w-4 h-4 mr-2" />
                       Logga ut
