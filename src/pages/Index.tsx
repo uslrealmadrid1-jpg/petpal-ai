@@ -111,6 +111,20 @@ export default function Index() {
                 <span className="hidden sm:inline">Allmän AI</span>
               </Button>
               
+              {/* Admin Button - Only visible for admins */}
+              {isAdmin && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/admin")}
+                  className="gap-2 border-amber-500/50 hover:bg-amber-500/10 hover:border-amber-500"
+                  title="Adminpanel"
+                >
+                  <Shield className="w-4 h-4 text-amber-500" />
+                  <span className="hidden sm:inline">Admin</span>
+                </Button>
+              )}
+              
               {/* Auth Section */}
               {authLoading ? (
                 <Loader2 className="w-4 h-4 animate-spin text-muted-foreground" />
