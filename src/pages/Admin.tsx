@@ -45,12 +45,28 @@ export default function Admin() {
   const [isLoadingLogs, setIsLoadingLogs] = useState(true);
   const [activeTab, setActiveTab] = useState<"users" | "logs">("users");
 
-  // Redirect if not admin - only redirect after auth check is complete
+  // Redirect if not admin - only redirect after auth check is complete AND roles are loaded
+  // We need to wait a bit for roles to be fetched since they're loaded async after user is set
+  const [rolesChecked, setRolesChecked] = useState(false);
+  
   useEffect(() => {
-    if (!authLoading && !isAdmin) {
+    if (!authLoading && user) {
+      // Give time for roles to be fetched (they're loaded async after auth)
+      const timer = setTimeout(() => {
+        setRolesChecked(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    } else if (!authLoading && !user) {
+      // No user, redirect immediately
       navigate("/", { replace: true });
     }
-  }, [isAdmin, authLoading, navigate]);
+  }, [authLoading, user, navigate]);
+  
+  useEffect(() => {
+    if (rolesChecked && !isAdmin) {
+      navigate("/", { replace: true });
+    }
+  }, [rolesChecked, isAdmin, navigate]);
 
   // Fetch users
   useEffect(() => {
@@ -101,7 +117,8 @@ export default function Admin() {
     }
   }, [isAdmin]);
 
-  if (authLoading) {
+  // Show loading while auth is loading or roles haven't been checked yet
+  if (authLoading || (user && !rolesChecked)) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
