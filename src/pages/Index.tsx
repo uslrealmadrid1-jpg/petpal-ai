@@ -10,6 +10,7 @@ import { AnimalSections } from "@/components/AnimalSections";
 import { SearchBar } from "@/components/SearchBar";
 import { AIChat } from "@/components/AIChat";
 import { SettingsTab } from "@/components/SettingsTab";
+// import { DatabaseHealthCheck } from "@/components/DatabaseHealthCheck";
 import { Button } from "@/components/ui/button";
 import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot, ArrowLeft, Settings } from "lucide-react";
 import {
@@ -33,25 +34,6 @@ export default function Index() {
   const [activeAnimal, setActiveAnimal] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-
-  // Apply theme on load and when settings change
-  useEffect(() => {
-    const root = document.documentElement;
-    const theme = settings.theme;
-    
-    if (theme === "dark") {
-      root.classList.add("dark");
-    } else if (theme === "light") {
-      root.classList.remove("dark");
-    } else {
-      // System preference
-      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        root.classList.add("dark");
-      } else {
-        root.classList.remove("dark");
-      }
-    }
-  }, [settings.theme]);
 
   // Set first animal as active when loaded (only if not in globalAI view)
   useEffect(() => {
@@ -109,6 +91,11 @@ export default function Index() {
       {/* Header */}
       <header className="bg-card border-b border-border">
         <div className="container py-4">
+          {/* Database Health Check - Remove this after setup is complete */}
+          {/* <div className="mb-4">
+            <DatabaseHealthCheck />
+          </div> */}
+
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-soft">

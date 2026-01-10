@@ -1,8 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Source+Sans+3:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
@@ -125,13 +124,36 @@
     --sidebar-border: 220 10% 25%;
     --sidebar-ring: 142 50% 55%;
     
-    /* Dark mode animal themes - higher contrast text */
-    --animal-gecko-text: 40 30% 90%;
-    --animal-turtle-text: 100 30% 90%;
-    --animal-hamster-text: 35 30% 90%;
-    --animal-rabbit-text: 0 0% 95%;
-    --animal-fish-text: 199 40% 90%;
-    --animal-bird-text: 207 40% 90%;
+    /* Dark mode animal themes */
+      --animal-gecko-main: 43 60% 35%;
+      --animal-gecko-accent: 25 50% 45%;
+      --animal-gecko-bg: 40 30% 18%;
+      --animal-gecko-text: 40 40% 85%;
+    
+      --animal-turtle-main: 100 35% 35%;
+      --animal-turtle-accent: 100 40% 45%;
+      --animal-turtle-bg: 100 20% 18%;
+      --animal-turtle-text: 100 40% 85%;
+    
+      --animal-hamster-main: 35 50% 40%;
+      --animal-hamster-accent: 35 50% 50%;
+      --animal-hamster-bg: 35 25% 18%;
+      --animal-hamster-text: 35 40% 85%;
+    
+      --animal-rabbit-main: 0 0% 30%;
+      --animal-rabbit-accent: 0 0% 45%;
+      --animal-rabbit-bg: 350 20% 18%;
+      --animal-rabbit-text: 0 0% 90%;
+    
+      --animal-fish-main: 199 60% 40%;
+      --animal-fish-accent: 85 50% 45%;
+      --animal-fish-bg: 199 30% 18%;
+      --animal-fish-text: 199 50% 85%;
+    
+      --animal-bird-main: 207 60% 40%;
+      --animal-bird-accent: 50 70% 50%;
+      --animal-bird-bg: 207 30% 18%;
+      --animal-bird-text: 207 50% 85%;
   }
 }
 

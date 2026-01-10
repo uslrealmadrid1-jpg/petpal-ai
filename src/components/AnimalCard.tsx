@@ -39,9 +39,9 @@ export function AnimalCard({ animal, onClick }: AnimalCardProps) {
             <Badge 
               variant="outline" 
               className={`text-xs
-                ${animal.svårighet === 'Nybörjare' ? 'border-green-500 text-green-700' : ''}
-                ${animal.svårighet === 'Medel' ? 'border-amber-500 text-amber-700' : ''}
-                ${animal.svårighet === 'Avancerad' ? 'border-red-500 text-red-700' : ''}
+                ${animal.svårighet === 'Nybörjare' ? 'border-green-500 text-green-700 dark:text-green-400 dark:border-green-400' : '' }
+                ${ animal.svårighet === 'Medel' ? 'border-amber-500 text-amber-700 dark:text-amber-400 dark:border-amber-400' : '' }
+                ${ animal.svårighet === 'Avancerad' ? 'border-red-500 text-red-700 dark:text-red-400 dark:border-red-400' : ''}
               `}
             >
               {animal.svårighet}
