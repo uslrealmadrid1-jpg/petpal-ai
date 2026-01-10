@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_actions: {
+        Row: {
+          action_type: string
+          admin_user_id: string
+          created_at: string | null
+          id: string
+          reason: string | null
+          target_user_id: string
+        }
+        Insert: {
+          action_type: string
+          admin_user_id: string
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          target_user_id: string
+        }
+        Update: {
+          action_type?: string
+          admin_user_id?: string
+          created_at?: string | null
+          id?: string
+          reason?: string | null
+          target_user_id?: string
+        }
+        Relationships: []
+      }
       ai_chat_history: {
         Row: {
           animal_id: string | null
@@ -293,6 +320,39 @@ export type Database = {
           },
         ]
       }
+      flagged_messages: {
+        Row: {
+          created_at: string | null
+          flag_reason: string
+          id: string
+          is_reviewed: boolean | null
+          message_content: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          flag_reason: string
+          id?: string
+          is_reviewed?: boolean | null
+          message_content: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          flag_reason?: string
+          id?: string
+          is_reviewed?: boolean | null
+          message_content?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       login_logs: {
         Row: {
           created_at: string
@@ -432,6 +492,45 @@ export type Database = {
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_violations: {
+        Row: {
+          blocked_at: string | null
+          blocked_reason: string | null
+          created_at: string | null
+          id: string
+          is_blocked: boolean | null
+          unblocked_at: string | null
+          unblocked_by_admin: boolean | null
+          updated_at: string | null
+          user_id: string
+          violation_count: number | null
+        }
+        Insert: {
+          blocked_at?: string | null
+          blocked_reason?: string | null
+          created_at?: string | null
+          id?: string
+          is_blocked?: boolean | null
+          unblocked_at?: string | null
+          unblocked_by_admin?: boolean | null
+          updated_at?: string | null
+          user_id: string
+          violation_count?: number | null
+        }
+        Update: {
+          blocked_at?: string | null
+          blocked_reason?: string | null
+          created_at?: string | null
+          id?: string
+          is_blocked?: boolean | null
+          unblocked_at?: string | null
+          unblocked_by_admin?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+          violation_count?: number | null
         }
         Relationships: []
       }

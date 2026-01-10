@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
-import { Send, Bot, Sparkles, HelpCircle, ShoppingCart, AlertTriangle, Loader2 } from "lucide-react";
+import { Send, Bot, Sparkles, HelpCircle, ShoppingCart, AlertTriangle, Loader2, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
+import { useUserBlock } from "@/hooks/useUserBlock";
 
 interface Message {
   id: string;
@@ -30,6 +32,8 @@ export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
+  const { isBlocked, blockReason, isLoading: blockLoading } = useUserBlock();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -53,11 +57,36 @@ export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps
         messages: userMessages.map((m) => ({ role: m.role, content: m.content })),
         animalId: isGlobalAI ? null : animalId,
         isGlobalAI,
+        userId: user?.id || null,
       }),
     });
 
     if (!resp.ok) {
       const errorData = await resp.json().catch(() => ({}));
+      
+      // Check if user was blocked
+      if (errorData.blocked) {
+        toast({
+          title: "Konto blockerat",
+          description: errorData.error || "Ditt konto är blockerat.",
+          variant: "destructive",
+        });
+        return "";
+      }
+      
+      // Check if message was flagged
+      if (errorData.flagged) {
+        toast({
+          title: "Endast djurfrågor",
+          description: errorData.error || "Ställ en fråga om djur istället.",
+          variant: "default",
+        });
+        // Return the error message as assistant response
+        const assistantId = (Date.now() + 1).toString();
+        setMessages((prev) => [...prev, { id: assistantId, role: "assistant", content: errorData.error }]);
+        return errorData.error;
+      }
+      
       throw new Error(errorData.error || `Request failed: ${resp.status}`);
     }
 
