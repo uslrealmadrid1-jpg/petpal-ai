@@ -7,8 +7,9 @@ import { AnimalProfile } from "@/components/AnimalProfile";
 import { AnimalSections } from "@/components/AnimalSections";
 import { SearchBar } from "@/components/SearchBar";
 import { AIChat } from "@/components/AIChat";
+import { SettingsTab } from "@/components/SettingsTab";
 import { Button } from "@/components/ui/button";
-import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot, ArrowLeft } from "lucide-react";
+import { PawPrint, Heart, Sparkles, Loader2, LogIn, LogOut, User, Shield, Bot, ArrowLeft, Settings } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,7 +19,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-type ActiveView = "animal" | "globalAI";
+type ActiveView = "animal" | "globalAI" | "settings";
 
 export default function Index() {
   const navigate = useNavigate();
@@ -42,7 +43,13 @@ export default function Index() {
     setActiveAnimal(null);
   };
 
-  // Handler for going back from Global AI
+  // Handler for Settings button
+  const handleSettingsClick = () => {
+    setActiveView("settings");
+    setActiveAnimal(null);
+  };
+
+  // Handler for going back from Global AI or Settings
   const handleBackClick = () => {
     setActiveView("animal");
   };
@@ -110,6 +117,20 @@ export default function Index() {
                 <Bot className="w-4 h-4" />
                 <span className="hidden sm:inline">Allmän AI</span>
               </Button>
+              
+              {/* Settings Button - Only for logged in users */}
+              {user && (
+                <Button
+                  variant={activeView === "settings" ? "default" : "outline"}
+                  size="sm"
+                  onClick={handleSettingsClick}
+                  className="gap-2"
+                  title="Inställningar"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span className="hidden sm:inline">Inställningar</span>
+                </Button>
+              )}
               
               {/* Admin Button - Only visible for admins */}
               {isAdmin && (
@@ -187,7 +208,35 @@ export default function Index() {
 
       {/* Main Content */}
       <main className="container py-6">
-        {activeView === "globalAI" ? (
+        {activeView === "settings" ? (
+          /* Settings View */
+          <div className="max-w-2xl mx-auto animate-fade-in">
+            {/* Back Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBackClick}
+              className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Tillbaka till djur
+            </Button>
+            
+            <div className="text-center mb-6">
+              <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
+                <Settings className="w-4 h-4" />
+                <span className="font-medium text-sm">Inställningar</span>
+              </div>
+              <h2 className="font-display text-2xl font-bold text-foreground mb-2">
+                Dina inställningar
+              </h2>
+              <p className="text-muted-foreground">
+                Anpassa språk, tema och se din sparade data.
+              </p>
+            </div>
+            <SettingsTab />
+          </div>
+        ) : activeView === "globalAI" ? (
           /* Global AI Chat View - completely separate from animals */
           <div className="max-w-2xl mx-auto animate-fade-in">
             {/* Back Button */}

@@ -16,11 +16,13 @@ import {
   CheckCircle,
   XCircle,
   Activity,
-  Flag
+  Flag,
+  Settings
 } from "lucide-react";
 import { format } from "date-fns";
 import { sv } from "date-fns/locale";
 import { ModerationTab } from "@/components/admin/ModerationTab";
+import { SettingsTab } from "@/components/SettingsTab";
 
 interface UserProfile {
   id: string;
@@ -45,7 +47,7 @@ export default function Admin() {
   const [loginLogs, setLoginLogs] = useState<LoginLog[]>([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(true);
   const [isLoadingLogs, setIsLoadingLogs] = useState(true);
-  const [activeTab, setActiveTab] = useState<"users" | "logs" | "moderation">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "logs" | "moderation" | "settings">("users");
 
   // Redirect if not admin - only redirect after auth check is complete AND roles are loaded
   // We need to wait a bit for roles to be fetched since they're loaded async after user is set
@@ -210,12 +212,25 @@ export default function Admin() {
             <Activity className="w-4 h-4" />
             Loggar
           </button>
+          <button
+            onClick={() => setActiveTab("settings")}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${
+              activeTab === "settings" 
+                ? "bg-background text-foreground shadow-sm" 
+                : "text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Settings className="w-4 h-4" />
+            Inställningar
+          </button>
         </div>
       </div>
 
       {/* Main Content */}
       <main className="container pb-12">
-        {activeTab === "moderation" ? (
+        {activeTab === "settings" ? (
+          <SettingsTab />
+        ) : activeTab === "moderation" ? (
           <ModerationTab />
         ) : activeTab === "users" ? (
           /* Users Tab */
