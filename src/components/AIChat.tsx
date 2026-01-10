@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { useUserBlock } from "@/hooks/useUserBlock";
+import { useLanguage } from "@/hooks/useLanguage";
 
 interface Message {
   id: string;
@@ -19,13 +20,6 @@ interface AIChatProps {
   isGlobalAI?: boolean;
 }
 
-const quickActions = [
-  { icon: HelpCircle, label: "Vanliga misstag", prompt: "Vilka är de vanligaste misstagen?" },
-  { icon: ShoppingCart, label: "Inköpslista", prompt: "Skapa en inköpslista" },
-  { icon: AlertTriangle, label: "Vad saknas?", prompt: "Vad kan saknas i min setup?" },
-  { icon: Sparkles, label: "Tips för nybörjare", prompt: "Ge tips för nybörjare" },
-];
-
 export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
@@ -34,6 +28,14 @@ export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps
   const { toast } = useToast();
   const { user } = useAuth();
   const { isBlocked, blockReason, isLoading: blockLoading } = useUserBlock();
+  const { t } = useLanguage();
+
+  const quickActions = [
+    { icon: HelpCircle, label: t("ai.commonMistakes"), prompt: "Vilka är de vanligaste misstagen?" },
+    { icon: ShoppingCart, label: t("ai.shoppingList"), prompt: "Skapa en inköpslista" },
+    { icon: AlertTriangle, label: t("ai.whatMissing"), prompt: "Vad kan saknas i min setup?" },
+    { icon: Sparkles, label: t("ai.beginnerTips"), prompt: "Ge tips för nybörjare" },
+  ];
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -160,7 +162,7 @@ export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps
     } catch (error) {
       console.error("Chat error:", error);
       toast({
-        title: "Fel",
+        title: t("general.error"),
         description: error instanceof Error ? error.message : "Kunde inte få svar från AI",
         variant: "destructive",
       });
@@ -181,14 +183,14 @@ export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps
           </div>
           <div>
             <h3 className="font-display font-semibold text-foreground">
-              {isGlobalAI ? "🌍 Allmän Djur-AI" : animalName ? `${animalName}-experten` : "🐾 Djurvårds-AI"}
+              {isGlobalAI ? `🌍 ${t("ai.globalTitle")}` : animalName ? `${animalName}-${t("ai.expert")}` : "🐾 Djurvårds-AI"}
             </h3>
             <p className="text-xs text-muted-foreground">
               {isGlobalAI
-                ? "Fråga mig om alla djur, jämför arter och få generella råd"
+                ? t("ai.globalSubtitle")
                 : animalName
-                ? `Fråga mig om ${animalName}!`
-                : "Fråga mig om alla djur i databasen"}
+                ? `${t("ai.askAbout")} ${animalName}!`
+                : t("ai.askAnimal")}
             </p>
           </div>
         </div>
@@ -197,7 +199,7 @@ export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps
       {/* Quick Actions */}
       {messages.length === 0 && (
         <div className="p-4 border-b border-border">
-          <p className="text-sm text-muted-foreground mb-3">Snabbfrågor:</p>
+          <p className="text-sm text-muted-foreground mb-3">{t("ai.quickQuestions")}</p>
           <div className="flex flex-wrap gap-2">
             {quickActions.map((action, i) => (
               <Button
@@ -223,8 +225,8 @@ export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps
             <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
             <p className="text-sm">
               {animalName
-                ? `Ställ en fråga om ${animalName}!`
-                : "Välj ett djur eller ställ en allmän fråga"}
+                ? `${t("ai.askAbout")} ${animalName}!`
+                : t("ai.selectOrAsk")}
             </p>
           </div>
         )}
@@ -241,7 +243,7 @@ export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps
               {message.content || (
                 <span className="flex items-center gap-2">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Tänker...
+                  {t("ai.thinking")}
                 </span>
               )}
             </div>
@@ -263,7 +265,7 @@ export function AIChat({ animalId, animalName, isGlobalAI = false }: AIChatProps
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={animalName ? `Fråga om ${animalName}...` : "Ställ en fråga..."}
+            placeholder={animalName ? `${t("ai.askAbout")} ${animalName}...` : t("ai.askQuestion")}
             className="flex-1"
             disabled={isLoading}
           />

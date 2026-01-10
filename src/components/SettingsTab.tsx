@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useUserSettings } from "@/hooks/useUserSettings";
+import { useLanguage, translations, Language } from "@/hooks/useLanguage";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,7 @@ import {
   CheckCircle
 } from "lucide-react";
 import { format } from "date-fns";
-import { sv } from "date-fns/locale";
+import { sv, enUS, de, nb, fi, es } from "date-fns/locale";
 import { toast } from "sonner";
 
 interface ChatHistory {
@@ -34,10 +35,20 @@ interface ChatHistory {
   animal_id: string | null;
 }
 
+const dateLocales = {
+  sv: sv,
+  en: enUS,
+  de: de,
+  no: nb,
+  fi: fi,
+  es: es
+} as const;
+
 export function SettingsTab() {
   const { user } = useAuth();
   const { settings, isLoading: settingsLoading, saveSettings } = useUserSettings();
-  const [language, setLanguage] = useState(settings.language);
+  const { language, setLanguage: setGlobalLanguage, t } = useLanguage();
+  const [localLanguage, setLocalLanguage] = useState<Language>(language);
   const [theme, setTheme] = useState(settings.theme);
   const [isSaving, setIsSaving] = useState(false);
   const [chatHistory, setChatHistory] = useState<ChatHistory[]>([]);
@@ -45,11 +56,11 @@ export function SettingsTab() {
 
   // Update local state when settings load
   useEffect(() => {
-    setLanguage(settings.language);
+    setLocalLanguage(settings.language as Language);
     setTheme(settings.theme);
   }, [settings]);
 
-  // Apply theme
+  // Apply theme immediately when changed
   useEffect(() => {
     const root = document.documentElement;
     if (theme === "dark") {
@@ -95,17 +106,22 @@ export function SettingsTab() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    const success = await saveSettings({ language, theme });
+    
+    // Update global language immediately
+    setGlobalLanguage(localLanguage);
+    
+    const success = await saveSettings({ language: localLanguage, theme });
     if (success) {
-      toast.success("Inställningar sparade!");
+      toast.success(t("settings.saved"));
     } else {
-      toast.error("Kunde inte spara inställningar");
+      toast.error(t("settings.error"));
     }
     setIsSaving(false);
   };
 
   const formatDate = (date: string) => {
-    return format(new Date(date), "d MMM yyyy HH:mm", { locale: sv });
+    const locale = dateLocales[localLanguage] || sv;
+    return format(new Date(date), "d MMM yyyy HH:mm", { locale });
   };
 
   const languages = [
@@ -118,9 +134,9 @@ export function SettingsTab() {
   ];
 
   const themes = [
-    { value: "system", label: "System", icon: Monitor },
-    { value: "light", label: "Ljust", icon: Sun },
-    { value: "dark", label: "Mörkt", icon: Moon }
+    { value: "system", labelKey: "settings.themeSystem" as const, icon: Monitor },
+    { value: "light", labelKey: "settings.themeLight" as const, icon: Sun },
+    { value: "dark", labelKey: "settings.themeDark" as const, icon: Moon }
   ];
 
   if (settingsLoading) {
@@ -138,16 +154,16 @@ export function SettingsTab() {
         <div className="p-4 border-b border-border">
           <h2 className="font-semibold text-foreground flex items-center gap-2">
             <Globe className="w-4 h-4" />
-            Språk
+            {t("settings.language")}
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            Välj språk för appen
+            {t("settings.languageDesc")}
           </p>
         </div>
         <div className="p-4">
-          <Select value={language} onValueChange={setLanguage}>
+          <Select value={localLanguage} onValueChange={(val) => setLocalLanguage(val as Language)}>
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="Välj språk" />
+              <SelectValue placeholder={t("settings.language")} />
             </SelectTrigger>
             <SelectContent>
               {languages.map((lang) => (
@@ -165,28 +181,28 @@ export function SettingsTab() {
         <div className="p-4 border-b border-border">
           <h2 className="font-semibold text-foreground flex items-center gap-2">
             <Sun className="w-4 h-4" />
-            Tema
+            {t("settings.theme")}
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            Välj utseende för appen
+            {t("settings.themeDesc")}
           </p>
         </div>
         <div className="p-4">
           <div className="flex gap-2 flex-wrap">
-            {themes.map((t) => {
-              const Icon = t.icon;
+            {themes.map((themeOption) => {
+              const Icon = themeOption.icon;
               return (
                 <button
-                  key={t.value}
-                  onClick={() => setTheme(t.value)}
+                  key={themeOption.value}
+                  onClick={() => setTheme(themeOption.value)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg border transition-colors ${
-                    theme === t.value
+                    theme === themeOption.value
                       ? "border-primary bg-primary/10 text-primary"
-                      : "border-border bg-background text-muted-foreground hover:bg-muted"
+                      : "border-border bg-background text-foreground hover:bg-muted"
                   }`}
                 >
                   <Icon className="w-4 h-4" />
-                  {t.label}
+                  {t(themeOption.labelKey)}
                 </button>
               );
             })}
@@ -204,12 +220,12 @@ export function SettingsTab() {
         {isSaving ? (
           <>
             <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Sparar...
+            {t("settings.saving")}
           </>
         ) : (
           <>
             <Save className="w-4 h-4 mr-2" />
-            Spara inställningar
+            {t("settings.save")}
           </>
         )}
       </Button>
@@ -219,10 +235,10 @@ export function SettingsTab() {
         <div className="p-4 border-b border-border">
           <h2 className="font-semibold text-foreground flex items-center gap-2">
             <MessageSquare className="w-4 h-4" />
-            Dina senaste AI-frågor
+            {t("settings.chatHistory")}
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            Endast dina egna frågor visas här
+            {t("settings.chatHistoryDesc")}
           </p>
         </div>
         
@@ -233,7 +249,7 @@ export function SettingsTab() {
         ) : chatHistory.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
-            <p>Inga AI-frågor ännu</p>
+            <p>{t("settings.noChatHistory")}</p>
           </div>
         ) : (
           <div className="divide-y divide-border max-h-64 overflow-y-auto">
@@ -257,16 +273,16 @@ export function SettingsTab() {
         <div className="p-4 border-b border-border">
           <h2 className="font-semibold text-foreground flex items-center gap-2">
             <CheckCircle className="w-4 h-4 text-green-500" />
-            Kontoinformation
+            {t("settings.accountInfo")}
           </h2>
         </div>
         <div className="p-4 space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Inloggad som</span>
-            <Badge variant="outline">{user?.email || "Okänd"}</Badge>
+            <span className="text-sm text-muted-foreground">{t("settings.loggedInAs")}</span>
+            <Badge variant="outline">{user?.email || t("settings.unknown")}</Badge>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-muted-foreground">Konto-ID</span>
+            <span className="text-sm text-muted-foreground">{t("settings.accountId")}</span>
             <Badge variant="outline" className="font-mono text-xs">
               {user?.id?.slice(0, 8)}...
             </Badge>

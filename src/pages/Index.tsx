@@ -2,6 +2,8 @@ import { useState, useMemo, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAnimals, useAnimalDetails } from "@/hooks/useAnimals";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/hooks/useLanguage";
+import { useUserSettings } from "@/hooks/useUserSettings";
 import { AnimalTabs } from "@/components/AnimalTabs";
 import { AnimalProfile } from "@/components/AnimalProfile";
 import { AnimalSections } from "@/components/AnimalSections";
@@ -25,10 +27,31 @@ export default function Index() {
   const navigate = useNavigate();
   const { data: animals = [], isLoading: animalsLoading } = useAnimals();
   const { user, isLoading: authLoading, roles, signOut, isAdmin, isModerator } = useAuth();
+  const { t } = useLanguage();
+  const { settings } = useUserSettings();
   const [activeView, setActiveView] = useState<ActiveView>("animal");
   const [activeAnimal, setActiveAnimal] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+
+  // Apply theme on load and when settings change
+  useEffect(() => {
+    const root = document.documentElement;
+    const theme = settings.theme;
+    
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else if (theme === "light") {
+      root.classList.remove("dark");
+    } else {
+      // System preference
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        root.classList.add("dark");
+      } else {
+        root.classList.remove("dark");
+      }
+    }
+  }, [settings.theme]);
 
   // Set first animal as active when loaded (only if not in globalAI view)
   useEffect(() => {
@@ -93,10 +116,10 @@ export default function Index() {
               </div>
               <div>
                 <h1 className="font-display text-xl font-bold text-foreground">
-                  DjurData
+                  {t("app.title")}
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  Din guide till ansvarsfull djurhållning
+                  {t("app.subtitle")}
                 </p>
               </div>
             </div>
@@ -104,7 +127,7 @@ export default function Index() {
             <div className="flex items-center gap-3">
               <div className="hidden sm:flex items-center gap-2 text-xs text-muted-foreground">
                 <Heart className="w-3 h-3 text-red-500" />
-                <span>{animals.length} arter</span>
+                <span>{animals.length} {t("nav.species")}</span>
               </div>
               
               {/* Global AI Button */}
@@ -115,7 +138,7 @@ export default function Index() {
                 className="gap-2"
               >
                 <Bot className="w-4 h-4" />
-                <span className="hidden sm:inline">Allmän AI</span>
+                <span className="hidden sm:inline">{t("nav.globalAI")}</span>
               </Button>
               
               {/* Settings Button - Only for logged in users */}
@@ -125,10 +148,10 @@ export default function Index() {
                   size="sm"
                   onClick={handleSettingsClick}
                   className="gap-2"
-                  title="Inställningar"
+                  title={t("nav.settings")}
                 >
                   <Settings className="w-4 h-4" />
-                  <span className="hidden sm:inline">Inställningar</span>
+                  <span className="hidden sm:inline">{t("nav.settings")}</span>
                 </Button>
               )}
               
@@ -139,10 +162,10 @@ export default function Index() {
                   size="sm"
                   onClick={() => navigate("/admin")}
                   className="gap-2 border-amber-500/50 hover:bg-amber-500/10 hover:border-amber-500"
-                  title="Adminpanel"
+                  title={t("nav.admin")}
                 >
                   <Shield className="w-4 h-4 text-amber-500" />
-                  <span className="hidden sm:inline">Admin</span>
+                  <span className="hidden sm:inline">{t("nav.admin")}</span>
                 </Button>
               )}
               
@@ -163,16 +186,16 @@ export default function Index() {
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel className="font-normal">
                       <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium">{user.email}</p>
+                        <p className="text-sm font-medium text-foreground">{user.email}</p>
                         <p className="text-xs text-muted-foreground">
-                          Roll: {roles.length > 0 ? roles.join(", ") : "Användare"}
+                          {t("nav.role")}: {roles.length > 0 ? roles.join(", ") : t("nav.user")}
                         </p>
                       </div>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem onClick={signOut}>
                       <LogOut className="w-4 h-4 mr-2" />
-                      Logga ut
+                      {t("nav.logout")}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -180,7 +203,7 @@ export default function Index() {
                 <Link to="/auth">
                   <Button size="sm" className="gap-2">
                     <LogIn className="w-4 h-4" />
-                    <span className="hidden sm:inline">Logga in</span>
+                    <span className="hidden sm:inline">{t("nav.login")}</span>
                   </Button>
                 </Link>
               )}
@@ -219,19 +242,19 @@ export default function Index() {
               className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="w-4 h-4" />
-              Tillbaka till djur
+              {t("settings.back")}
             </Button>
             
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
                 <Settings className="w-4 h-4" />
-                <span className="font-medium text-sm">Inställningar</span>
+                <span className="font-medium text-sm">{t("nav.settings")}</span>
               </div>
               <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                Dina inställningar
+                {t("settings.title")}
               </h2>
               <p className="text-muted-foreground">
-                Anpassa språk, tema och se din sparade data.
+                {t("settings.subtitle")}
               </p>
             </div>
             <SettingsTab />
@@ -247,19 +270,19 @@ export default function Index() {
               className="mb-4 gap-2 text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="w-4 h-4" />
-              Tillbaka till djur
+              {t("settings.back")}
             </Button>
             
             <div className="text-center mb-6">
               <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full mb-4">
                 <Bot className="w-4 h-4" />
-                <span className="font-medium text-sm">Allmän AI-Assistent</span>
+                <span className="font-medium text-sm">{t("ai.globalTitle")}</span>
               </div>
               <h2 className="font-display text-2xl font-bold text-foreground mb-2">
-                Fråga mig om alla djur!
+                {t("ai.askAllAnimals")}
               </h2>
               <p className="text-muted-foreground">
-                Jag svarar generellt om alla djur, jämför arter och ger bred kunskap.
+                {t("ai.generalAdvice")}
               </p>
             </div>
             <AIChat animalId={null} animalName={null} isGlobalAI={true} />
@@ -288,16 +311,16 @@ export default function Index() {
             
             {/* Animal-specific AI Chat */}
             <div className="mt-8">
-              <h3 className="font-display text-lg font-semibold mb-4 flex items-center gap-2">
+              <h3 className="font-display text-lg font-semibold mb-4 flex items-center gap-2 text-foreground">
                 <Sparkles className="w-5 h-5 text-primary" />
-                Chatta med {selectedAnimal.namn}-experten
+                {t("ai.chatWith")} {selectedAnimal.namn}-{t("ai.expert")}
               </h3>
               <AIChat animalId={selectedAnimal.id} animalName={selectedAnimal.namn} />
             </div>
           </div>
         ) : (
           <div className="text-center py-12 text-muted-foreground">
-            <p>Välj ett djur för att se information</p>
+            <p>{t("general.selectAnimal")}</p>
           </div>
         )}
       </main>
@@ -306,10 +329,10 @@ export default function Index() {
       <footer className="bg-card border-t border-border mt-12">
         <div className="container py-6 text-center">
           <p className="text-sm text-muted-foreground">
-            🐾 DjurData — Säker information för lyckliga husdjur
+            🐾 {t("app.title")} — {t("app.footer")}
           </p>
           <p className="text-xs text-muted-foreground mt-2">
-            ⚠️ Kontakta alltid veterinär vid akuta hälsoproblem
+            ⚠️ {t("app.footerWarning")}
           </p>
         </div>
       </footer>
