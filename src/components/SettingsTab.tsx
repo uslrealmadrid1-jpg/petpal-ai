@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useUserSettings } from "@/hooks/useUserSettings";
 import { useLanguage, translations, Language } from "@/hooks/useLanguage";
 import { useAuth } from "@/hooks/useAuth";
+import { useTheme } from "@/hooks/useTheme";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { 
@@ -48,6 +49,7 @@ export function SettingsTab() {
   const { user } = useAuth();
   const { settings, isLoading: settingsLoading, saveSettings } = useUserSettings();
   const { language, setLanguage: setGlobalLanguage, t } = useLanguage();
+  const { applyTheme } = useTheme();
   const [localLanguage, setLocalLanguage] = useState<Language>(language);
   const [theme, setTheme] = useState(settings.theme);
   const [isSaving, setIsSaving] = useState(false);
@@ -89,13 +91,16 @@ export function SettingsTab() {
 
   const handleSave = async () => {
     setIsSaving(true);
-    
+
     // Update global language immediately
     setGlobalLanguage(localLanguage);
-    
+
+    // Apply theme immediately
+    applyTheme(theme);
+
     // Also save to localStorage for persistence
     localStorage.setItem('app-language', localLanguage);
-    
+
     const success = await saveSettings({ language: localLanguage, theme });
     if (success) {
       toast.success(t("settings.saved"));
