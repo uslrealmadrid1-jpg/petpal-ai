@@ -1,15 +1,18 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useContext, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useEffect, ReactNode, useCallback } from 'react';
 import { useUserSettings } from './useUserSettings';
 
-const ThemeContext = createContext<object>({});
+interface ThemeContextType {
+  applyTheme: (theme: string) => void;
+}
+
+const ThemeContext = createContext<ThemeContextType>({ applyTheme: () => {} });
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const { settings } = useUserSettings();
 
-  useEffect(() => {
+  const applyTheme = useCallback((theme: string) => {
     const root = document.documentElement;
-    const theme = settings.theme;
 
     // Remove dark class first
     root.classList.remove('dark');
@@ -27,25 +30,30 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       } else {
         root.classList.remove('dark');
       }
+    }
+  }, []);
 
-      // Listen for system theme changes
+  useEffect(() => {
+    applyTheme(settings.theme);
+
+    // Listen for system theme changes when theme is 'system'
+    if (settings.theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
       const handleChange = (e: MediaQueryListEvent) => {
-        if (settings.theme === 'system') {
-          if (e.matches) {
-            root.classList.add('dark');
-          } else {
-            root.classList.remove('dark');
-          }
+        const root = document.documentElement;
+        if (e.matches) {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
         }
       };
 
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
-  }, [settings.theme]);
+  }, [settings.theme, applyTheme]);
 
-  return <ThemeContext.Provider value={{}}>{children}</ThemeContext.Provider>;
+  return <ThemeContext.Provider value={{ applyTheme }}>{children}</ThemeContext.Provider>;
 }
 
 export const useTheme = () => useContext(ThemeContext);
