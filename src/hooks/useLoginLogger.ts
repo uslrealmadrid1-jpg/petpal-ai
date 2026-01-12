@@ -16,7 +16,6 @@ export async function logLoginAttempt({ email, success, userId }: LogLoginParams
       success,
       user_id: userId || null,
       user_agent: userAgent,
-      ip_address: null, // Would need server-side to get real IP
     });
   } catch (error) {
     // Silently fail - don't block login flow
