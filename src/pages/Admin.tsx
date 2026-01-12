@@ -35,7 +35,6 @@ interface LoginLog {
   id: string;
   email: string;
   success: boolean;
-  ip_address: string | null;
   user_agent: string | null;
   created_at: string;
 }
@@ -364,8 +363,8 @@ export default function Admin() {
                             <Mail className="w-3 h-3 text-muted-foreground" />
                             {log.email}
                           </p>
-                          <p className="text-xs text-muted-foreground">
-                            {log.ip_address || "Okänd IP"}
+                          <p className="text-xs text-muted-foreground truncate max-w-[200px]">
+                            {log.user_agent || "Okänd enhet"}
                           </p>
                         </div>
                       </div>

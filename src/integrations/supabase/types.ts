@@ -358,7 +358,6 @@ export type Database = {
           created_at: string
           email: string
           id: string
-          ip_address: string | null
           success: boolean
           user_agent: string | null
           user_id: string | null
@@ -367,7 +366,6 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
-          ip_address?: string | null
           success?: boolean
           user_agent?: string | null
           user_id?: string | null
@@ -376,7 +374,6 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
-          ip_address?: string | null
           success?: boolean
           user_agent?: string | null
           user_id?: string | null
