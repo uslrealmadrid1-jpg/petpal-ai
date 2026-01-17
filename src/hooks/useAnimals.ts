@@ -12,6 +12,9 @@ export interface DbAnimal {
   livslängd_år: string | null;
   beskrivning: string | null;
   theme: string | null;
+  ursprung: string | null;
+  storlek: string | null;
+  vikt: string | null;
 }
 
 export interface DbRequirements {

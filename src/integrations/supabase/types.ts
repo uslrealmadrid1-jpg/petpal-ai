@@ -250,10 +250,13 @@ export type Database = {
           kategori: Database["public"]["Enums"]["animal_category"]
           livslängd_år: string | null
           namn: string
+          storlek: string | null
           svårighet: Database["public"]["Enums"]["difficulty_level"] | null
           theme: string | null
           updated_at: string | null
+          ursprung: string | null
           vetenskapligt_namn: string | null
+          vikt: string | null
         }
         Insert: {
           aktivitet?: Database["public"]["Enums"]["activity_type"] | null
@@ -264,10 +267,13 @@ export type Database = {
           kategori: Database["public"]["Enums"]["animal_category"]
           livslängd_år?: string | null
           namn: string
+          storlek?: string | null
           svårighet?: Database["public"]["Enums"]["difficulty_level"] | null
           theme?: string | null
           updated_at?: string | null
+          ursprung?: string | null
           vetenskapligt_namn?: string | null
+          vikt?: string | null
         }
         Update: {
           aktivitet?: Database["public"]["Enums"]["activity_type"] | null
@@ -278,10 +284,13 @@ export type Database = {
           kategori?: Database["public"]["Enums"]["animal_category"]
           livslängd_år?: string | null
           namn?: string
+          storlek?: string | null
           svårighet?: Database["public"]["Enums"]["difficulty_level"] | null
           theme?: string | null
           updated_at?: string | null
+          ursprung?: string | null
           vetenskapligt_namn?: string | null
+          vikt?: string | null
         }
         Relationships: []
       }
