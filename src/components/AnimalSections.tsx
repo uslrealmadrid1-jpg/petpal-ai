@@ -246,10 +246,16 @@ export function AnimalSections({
         </ExpandableSection>
       )}
 
-      {/* 🤖 Djurspecifik AI-expert */}
-      <ExpandableSection title={`Chatta med ${animalName}-expert`} emoji="🤖">
+      {/* 🤖 Djurspecifik AI-expert - ALLTID SYNLIG (inte accordion) */}
+      <div className="mt-6 pt-6 border-t border-border">
+        <div className="flex items-center gap-2 mb-4">
+          <span className="text-xl">🤖</span>
+          <h3 className="text-lg font-semibold text-foreground">
+            Chatta med {animalName}-expert
+          </h3>
+        </div>
         <AIChat animalId={animalId} animalName={animalName} />
-      </ExpandableSection>
+      </div>
     </div>
   );
 }
