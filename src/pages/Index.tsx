@@ -284,7 +284,6 @@ export default function Index() {
             <AnimalProfile 
               animal={selectedAnimal} 
               requirements={animalDetails?.requirements}
-              warnings={animalDetails?.warnings}
             />
             <AnimalSections 
               animalId={selectedAnimal.id}
@@ -295,15 +294,6 @@ export default function Index() {
               warnings={animalDetails?.warnings || []}
               checklists={animalDetails?.checklists || []}
             />
-            
-            {/* Animal-specific AI Chat */}
-            <div className="mt-8">
-              <h3 className="font-display text-lg font-semibold mb-4 flex items-center gap-2 text-foreground">
-                <Sparkles className="w-5 h-5 text-primary" />
-                {t("ai.chatWith")} {selectedAnimal.namn}-{t("ai.expert")}
-              </h3>
-              <AIChat animalId={selectedAnimal.id} animalName={selectedAnimal.namn} />
-            </div>
           </div>
         ) : (
           <div className="text-center py-12 text-muted-foreground">

@@ -1,8 +1,10 @@
-import { DbRequirements, DbFood, DbDisease, DbWarning, DbChecklist, DbAnimal } from "@/hooks/useAnimals";
+import { DbRequirements, DbFood, DbDisease, DbWarning, DbChecklist } from "@/hooks/useAnimals";
 import { ExpandableSection } from "./ExpandableSection";
 import { Checklist } from "./Checklist";
 import { PetLogSection } from "./PetLogSection";
+import { AIChat } from "./AIChat";
 import { AlertTriangle } from "lucide-react";
+
 interface AnimalSectionsProps {
   animalId: string;
   animalName: string;
@@ -28,55 +30,76 @@ export function AnimalSections({
 
   return (
     <div className="space-y-4">
-      {/* Skötsel / Miljö */}
-      {requirements && (
-        <ExpandableSection title="Boende & Miljö" emoji="🏠" defaultOpen>
-          <div className="space-y-4">
+      {/* 🍽️ Mat & Vatten */}
+      <ExpandableSection title="Mat & Vatten" emoji="🍽️" badge={food.length > 0 ? `${food.length} typer` : undefined}>
+        <div className="space-y-3">
+          {food.length > 0 ? (
+            <>
+              {food.map((f) => (
+                <div key={f.id} className="bg-muted/50 rounded-lg p-3">
+                  <div className="font-medium text-foreground">{f.typ}</div>
+                  <div className="text-sm text-muted-foreground mt-1 flex flex-wrap gap-4">
+                    {f.frekvens && <span>📅 Frekvens: {f.frekvens}</span>}
+                    {f.mängd && <span>📊 Mängd: {f.mängd}</span>}
+                  </div>
+                </div>
+              ))}
+              
+              {requirements && (requirements.vatten_dryck || requirements.vatten_behandling) && (
+                <div className="mt-4 pt-4 border-t border-border">
+                  <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                    💧 Vatten
+                  </h4>
+                  <div className="bg-muted/50 rounded-lg p-3 space-y-2 text-sm">
+                    {requirements.vatten_dryck && <p><strong>Hur den dricker:</strong> {requirements.vatten_dryck}</p>}
+                    {requirements.vatten_behandling && <p><strong>Behandling:</strong> {requirements.vatten_behandling}</p>}
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">Ingen matinformation tillgänglig ännu.</p>
+          )}
+        </div>
+      </ExpandableSection>
+
+      {/* 🌡️ Temperatur, Värme & UVB */}
+      <ExpandableSection title="Temperatur, Värme & UVB" emoji="🌡️">
+        <div className="space-y-3">
+          {requirements ? (
             <div className="grid gap-3">
-              {requirements.bostad && <InfoRow label="Bostad" value={requirements.bostad} />}
-              {requirements.temperatur && <InfoRow label="Temperatur" value={requirements.temperatur} />}
-              {requirements.fuktighet && <InfoRow label="Fuktighet" value={requirements.fuktighet} />}
-              {requirements.belysning && <InfoRow label="Belysning" value={requirements.belysning} />}
-              {requirements.substrat && <InfoRow label="Substrat" value={requirements.substrat} />}
+              {requirements.temperatur && <InfoRow label="Optimal temperatur" value={requirements.temperatur} />}
+              {requirements.belysning && <InfoRow label="Belysning / UVB" value={requirements.belysning} />}
+              {!requirements.temperatur && !requirements.belysning && (
+                <p className="text-sm text-muted-foreground">Ej tillämpligt för detta djur.</p>
+              )}
             </div>
-          </div>
-        </ExpandableSection>
-      )}
+          ) : (
+            <p className="text-sm text-muted-foreground">Ingen temperaturinformation tillgänglig ännu.</p>
+          )}
+        </div>
+      </ExpandableSection>
 
-      {/* Mat & Foder */}
-      {food.length > 0 && (
-        <ExpandableSection title="Mat & Utfodring" emoji="🍽️" badge={`${food.length} typer`}>
-          <div className="space-y-3">
-            {food.map((f) => (
-              <div key={f.id} className="bg-muted/50 rounded-lg p-3">
-                <div className="font-medium text-foreground">{f.typ}</div>
-                <div className="text-sm text-muted-foreground mt-1 flex gap-4">
-                  {f.frekvens && <span>📅 {f.frekvens}</span>}
-                  {f.mängd && <span>📊 {f.mängd}</span>}
-                </div>
-              </div>
-            ))}
-            
-            {requirements && (requirements.vatten_dryck || requirements.vatten_behandling) && (
-              <div className="mt-4 pt-4 border-t border-border">
-                <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
-                  💧 Vatten
-                </h4>
-                <div className="bg-muted/50 rounded-lg p-3 space-y-2 text-sm">
-                  {requirements.vatten_dryck && <p><strong>Dryck:</strong> {requirements.vatten_dryck}</p>}
-                  {requirements.vatten_behandling && <p><strong>Behandling:</strong> {requirements.vatten_behandling}</p>}
-                </div>
-              </div>
-            )}
-          </div>
-        </ExpandableSection>
-      )}
+      {/* 🏠 Boende & Miljö */}
+      <ExpandableSection title="Boende & Miljö" emoji="🏠">
+        <div className="space-y-3">
+          {requirements ? (
+            <div className="grid gap-3">
+              {requirements.bostad && <InfoRow label="Typ av boende" value={requirements.bostad} />}
+              {requirements.substrat && <InfoRow label="Substrat / underlag" value={requirements.substrat} />}
+              {requirements.fuktighet && <InfoRow label="Fuktighet" value={requirements.fuktighet} />}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Ingen boendeinformation tillgänglig ännu.</p>
+          )}
+        </div>
+      </ExpandableSection>
 
-      {/* Aktivitet & Beteende */}
-      {requirements && (requirements.beteende_aktivitet || requirements.aktivitet_vaknar) && (
-        <ExpandableSection title="Beteende & Aktivitet" emoji="🐾">
-          <div className="space-y-4">
-            {(requirements.aktivitet_vaknar || requirements.aktivitet_sover || requirements.aktivitet_timmar) && (
+      {/* 🕒 Dygnsrytm & Aktivitet */}
+      <ExpandableSection title="Dygnsrytm & Aktivitet" emoji="🕒">
+        <div className="space-y-4">
+          {requirements && (requirements.aktivitet_vaknar || requirements.aktivitet_sover || requirements.aktivitet_timmar) ? (
+            <>
               <div className="bg-muted/50 rounded-lg p-4">
                 <h4 className="font-medium mb-3 flex items-center gap-2">
                   🕐 Aktivitetscykel
@@ -102,22 +125,56 @@ export function AnimalSections({
                   )}
                 </div>
               </div>
-            )}
-            
-            <div className="grid gap-3">
-              {requirements.beteende_aktivitet && <InfoRow label="Aktivitet" value={requirements.beteende_aktivitet} />}
-              {requirements.beteende_social && <InfoRow label="Socialt" value={requirements.beteende_social} />}
-              {requirements.beteende_lek && <InfoRow label="Lek" value={requirements.beteende_lek} />}
-            </div>
-          </div>
-        </ExpandableSection>
-      )}
+              {requirements.beteende_aktivitet && (
+                <InfoRow label="Hur aktiv" value={requirements.beteende_aktivitet} />
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">Ingen aktivitetsinformation tillgänglig ännu.</p>
+          )}
+        </div>
+      </ExpandableSection>
 
-      {/* Hälsa & Sjukdomar */}
-      {diseases.length > 0 && (
-        <ExpandableSection title="Hälsa & Sjukdomar" emoji="🩺" badge={`${diseases.length} vanliga`}>
-          <div className="space-y-4">
-            {diseases.map((disease) => (
+      {/* 🐾 Beteende & Socialt */}
+      <ExpandableSection title="Beteende & Socialt" emoji="🐾">
+        <div className="space-y-3">
+          {requirements && (requirements.beteende_social || requirements.beteende_lek) ? (
+            <div className="grid gap-3">
+              {requirements.beteende_social && <InfoRow label="Socialt beteende" value={requirements.beteende_social} />}
+              {requirements.beteende_lek && <InfoRow label="Lek & hantering" value={requirements.beteende_lek} />}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Ingen beteendeinformation tillgänglig ännu.</p>
+          )}
+        </div>
+      </ExpandableSection>
+
+      {/* 📅 Matningsschema */}
+      <ExpandableSection title="Matningsschema" emoji="📅">
+        <div className="space-y-3">
+          {food.length > 0 ? (
+            <div className="bg-muted/50 rounded-lg p-4">
+              <h4 className="font-medium mb-3">Typiskt schema</h4>
+              <div className="space-y-2 text-sm">
+                {food.map((f) => (
+                  <div key={f.id} className="flex justify-between items-center py-1 border-b border-border/50 last:border-0">
+                    <span className="text-foreground">{f.typ}</span>
+                    <span className="text-muted-foreground">{f.frekvens || "Ingen frekvens angiven"}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Inget matningsschema tillgängligt ännu.</p>
+          )}
+        </div>
+      </ExpandableSection>
+
+      {/* ❤️ Hälsa & Vanliga Sjukdomar */}
+      <ExpandableSection title="Hälsa & Vanliga Sjukdomar" emoji="❤️" badge={diseases.length > 0 ? `${diseases.length} vanliga` : undefined}>
+        <div className="space-y-4">
+          {diseases.length > 0 ? (
+            diseases.map((disease) => (
               <div key={disease.id} className="bg-muted/50 rounded-lg p-4">
                 <h4 className="font-medium text-foreground flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-amber-500" />
@@ -138,16 +195,18 @@ export function AnimalSections({
                   )}
                 </div>
               </div>
-            ))}
-          </div>
-        </ExpandableSection>
-      )}
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">Ingen sjukdomsinformation tillgänglig ännu.</p>
+          )}
+        </div>
+      </ExpandableSection>
 
-      {/* Varningar */}
-      {warnings.length > 0 && (
-        <ExpandableSection title="Vanliga misstag & Varningar" emoji="⚠️">
-          <div className="space-y-2">
-            {warnings.map((w) => (
+      {/* ⚠️ Vanliga Misstag & Varningar */}
+      <ExpandableSection title="Vanliga Misstag & Varningar" emoji="⚠️">
+        <div className="space-y-2">
+          {warnings.length > 0 ? (
+            warnings.map((w) => (
               <div 
                 key={w.id} 
                 className="flex gap-3 p-3 bg-destructive/10 border border-destructive/20 rounded-lg text-sm"
@@ -155,18 +214,26 @@ export function AnimalSections({
                 <span className="text-destructive shrink-0">⚠️</span>
                 <span className="text-foreground">{w.varning}</span>
               </div>
-            ))}
-          </div>
-        </ExpandableSection>
-      )}
+            ))
+          ) : (
+            <p className="text-sm text-muted-foreground">Inga varningar registrerade för detta djur.</p>
+          )}
+        </div>
+      </ExpandableSection>
 
-      {/* Checklistor */}
-      {inköpItems.length > 0 && (
-        <ExpandableSection title="Inköpslista" emoji="🛒" badge={`${inköpItems.length} saker`}>
+      {/* 🛒 Inköpslista */}
+      <ExpandableSection title="Inköpslista" emoji="🛒" badge={inköpItems.length > 0 ? `${inköpItems.length} saker` : undefined}>
+        {inköpItems.length > 0 ? (
           <Checklist type="inköp" items={inköpItems} animalId={animalId} />
-        </ExpandableSection>
-      )}
+        ) : (
+          <p className="text-sm text-muted-foreground">Ingen inköpslista tillgänglig ännu.</p>
+        )}
+      </ExpandableSection>
 
+      {/* 📓 Min djurlogg + ⏱️ Timer & Påminnelser */}
+      <PetLogSection animalId={animalId} animalName={animalName} />
+
+      {/* Dagliga & Veckorutiner */}
       {dagligItems.length > 0 && (
         <ExpandableSection title="Dagliga rutiner" emoji="📅">
           <Checklist type="daglig" items={dagligItems} animalId={animalId} />
@@ -179,8 +246,10 @@ export function AnimalSections({
         </ExpandableSection>
       )}
 
-      {/* Personal Pet Log Section */}
-      <PetLogSection animalId={animalId} animalName={animalName} />
+      {/* 🤖 Djurspecifik AI-expert */}
+      <ExpandableSection title={`Chatta med ${animalName}-expert`} emoji="🤖">
+        <AIChat animalId={animalId} animalName={animalName} />
+      </ExpandableSection>
     </div>
   );
 }
